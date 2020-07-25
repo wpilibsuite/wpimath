@@ -1,0 +1,280 @@
+import org.gradle.nativeplatform.toolchain.internal.msvcpp.VisualStudioLocator;
+import org.gradle.nativeplatform.toolchain.VisualCpp;
+
+apply plugin: 'maven-publish'
+
+publishing {
+    repositories {
+        maven {
+            url "${System.getProperty('user.home')}/releases/maven/development"
+        }
+        maven {
+            url "${System.getProperty('user.home')}/releases/maven/release"
+        }
+    }
+}
+
+def pubVersion = "2020.1"
+
+def baseArtifactId = 'wpimath'
+def artifactGroupId = 'edu.wpi.first.math'
+def zipBaseName = '_GROUP_edu_wpi_first_math_ID_wpimath_CLS'
+
+def outputsFolder = file("$project.buildDir/outputs")
+
+def versionFile = file("$outputsFolder/version.txt")
+
+task outputVersions() {
+    description = 'Prints the versions of this to a file for use by the downstream packaging project'
+    group = 'Build'
+    outputs.files(versionFile)
+
+    doFirst {
+        buildDir.mkdir()
+        outputsFolder.mkdir()
+    }
+
+    doLast {
+        versionFile.write pubVersion
+    }
+}
+
+build.dependsOn outputVersions
+copyAllOutputs.dependsOn outputVersions
+copyAllOutputs.inputs.file versionFile
+copyAllOutputs.from versionFile
+
+task cppSourcesZip(type: Zip) {
+    destinationDirectory = outputsFolder
+    archiveBaseName = zipBaseName
+    classifier = "sources"
+
+    from(licenseFile) {
+        into '/'
+    }
+
+    from('src/main/native/cpp') {
+        include '**/*.cpp'
+        into '/'
+    }
+}
+
+task cppHeadersZip(type: Zip) {
+    destinationDirectory = outputsFolder
+    archiveBaseName = zipBaseName
+    classifier = "headers"
+
+    from(licenseFile) {
+        into '/'
+    }
+
+    from('src/main/native/include') {
+        into '/'
+    }
+}
+
+build.dependsOn cppHeadersZip
+build.dependsOn cppSourcesZip
+
+addTaskToCopyAllOutputs(cppHeadersZip)
+addTaskToCopyAllOutputs(cppSourcesZip)
+
+class CombineTask extends DefaultTask {
+    @OutputDirectory
+    File outputDirectory
+
+    @OutputFile
+    File outputFile
+
+    @Internal
+    StaticLibraryBinarySpec binSpec
+}
+
+model {
+    publishing {
+        def tpMap = [:]
+        $.binaries.each {
+            def key = '';
+            if (it instanceof StaticLibraryBinarySpec) {
+                key = "$it.targetPlatform.name:$it.buildType.name".toString()
+            } else {
+                return
+            }
+            def value = tpMap[key]
+            if (value == null) {
+                value = []
+                tpMap.put(key, value)
+            }
+            value << it
+        }
+
+        def combineZipTasks = []
+
+        def root = project.file('build/combined')
+        tpMap.each { bins ->
+            def folderName = bins.key.replace(':', '')
+            def combineTask = project.tasks.create("combine${folderName}combinedlibrary", CombineTask) { t ->
+                build.dependsOn t
+                def files = []
+
+                def targetPlatform
+                def toolChain
+                def buildType
+
+                bins.value.each { binary->
+                    t.dependsOn binary.tasks.createStaticLib
+                    inputs.file(binary.staticLibraryFile)
+                    files << binary.staticLibraryFile
+                    targetPlatform = binary.targetPlatform
+                    toolChain = binary.toolChain
+                    buildType = binary.buildType
+                    binSpec = binary
+                }
+
+                inputs.files(files)
+
+                def outputDir = new File(root, folderName)
+
+                outputDirectory = outputDir
+
+                def debugStr =  buildType.name.contains('debug') ? 'd' : ''
+
+                if (targetPlatform.operatingSystem.isWindows()) {
+                    outputFile = project.file("$outputDir\\wpimath${debugStr}.lib")
+                } else {
+                    outputFile = project.file("$outputDir\\libwpimath${debugStr}.a")
+                }
+
+                outputs.file(outputFile)
+
+                def pdbFiles = []
+
+                def sourceLinkFile
+
+                if (targetPlatform.operatingSystem.isWindows()) {
+                    sourceLinkFile = tasks.named('generateSourceLinkFile')
+                    dependsOn sourceLinkFile
+                }
+
+                doFirst {
+                    files.each {
+                        project.fileTree(it.parentFile.absolutePath).matching {
+                            include "*.pdb"
+                        }.each {
+                            pdbFiles << it
+                        }
+                    }
+                }
+
+                doLast {
+
+                    if (targetPlatform.operatingSystem.isWindows()) {
+                        // Find Windows Toolchain
+                        def vslocator = project.services.get(VisualStudioLocator.class)
+                        def vsiSearch = vslocator.locateComponent(toolChain.installDir)
+                        if (vsiSearch.available) {
+                            def vsi = vsiSearch.component
+                            def vscpp = vsi.visualCpp.forPlatform(targetPlatform)
+                            def libExe = vscpp.archiverExecutable
+
+                            def runargs = ["/OUT:${outputFile.toString()}".toString()]
+                            files.each {
+                                runargs << it.toString()
+                            }
+
+                            outputDir.mkdirs()
+
+                            project.exec {
+                                executable libExe
+                                args(runargs)
+                            }
+                            project.copy {
+                                from pdbFiles
+                                into outputDir
+                            }
+                            project.copy {
+                                from sourceLinkFile.get().sourceLinkBaseFile
+                                into outputDir
+                            }
+
+                        } else {
+                            throw new GradleException("Could not combine windows archive")
+                        }
+                    } else if (targetPlatform.operatingSystem.isMacOsX()) {
+                        def setArgs = ['-static', '-o', "libwpimath${debugStr}.a".toString()]
+
+                        files.each {
+                            setArgs << it.absolutePath
+                        }
+
+                        project.exec {
+                            executable 'libtool'
+                            workingDir outputDir
+                            args = setArgs
+                        }
+                    } else {
+                        def inputString = "create libwpimath${debugStr}.a\n".toString()
+                        files.each {
+                            def inFile = 'addlib ' + it + '\n'
+                            inputString += inFile
+                        }
+                        inputString += 'save\nend\n'
+                        project.exec {
+                            executable 'ar'
+                            workingDir outputDir
+                            args = ['-M']
+                            standardInput = new ByteArrayInputStream(inputString.bytes)
+                        }
+                    }
+                }
+            }
+
+            def clsfier = nativeUtils.getPublishClassifier(combineTask.binSpec)
+
+            def combineZipTask =  project.tasks.create(zipBaseName + '-' + clsfier, Zip) {
+                description = 'Create component archive for static ' + clsfier
+                destinationDirectory = outputsFolder
+                classifier = clsfier
+                archiveBaseName = '_M_' + zipBaseName
+                duplicatesStrategy = 'exclude'
+
+                from (licenseFile) {
+                    into '/'
+                }
+
+                dependsOn combineTask
+
+                from(combineTask.outputDirectory) {
+                    into nativeUtils.getPlatformPath(combineTask.binSpec) + '/static'
+                }
+            }
+
+            combineZipTasks << combineZipTask
+
+            project.build.dependsOn combineZipTask
+            project.artifacts {
+                combineZipTask
+            }
+            addTaskToCopyAllOutputs(combineZipTask)
+        }
+
+        def gTaskList = createComponentZipTasks($.components, ['wpimath'], zipBaseName, Zip, project, includeStandardZipFormat)
+
+        publications {
+            cpp(MavenPublication) {
+                gTaskList.each {
+                    artifact it
+                }
+                combineZipTasks.each {
+                    artifact it
+                }
+                artifact cppHeadersZip
+                artifact cppSourcesZip
+
+                artifactId = baseArtifactId
+                groupId artifactGroupId
+                version pubVersion
+            }
+        }
+    }
+}

@@ -1,0 +1,129 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+import org.gradle.internal.os.OperatingSystem
+import org.gradle.nativeplatform.toolchain.internal.msvcpp.VisualStudioLocator;
+import org.gradle.nativeplatform.toolchain.VisualCpp;
+
+plugins {
+    id 'c'
+    id 'cpp'
+    id 'java-library'
+    id 'visual-studio'
+    id 'edu.wpi.first.NativeUtils' version '2020.9.3'
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext.licenseFile = file("$rootDir/LICENSE.txt")
+
+apply from: 'config.gradle'
+
+def outputsFolder = file("$buildDir/allOutputs")
+
+task copyAllOutputs(type: Copy) {
+    destinationDir outputsFolder
+}
+
+build.dependsOn copyAllOutputs
+
+ext.addTaskToCopyAllOutputs = { task ->
+    copyAllOutputs.dependsOn task
+    copyAllOutputs.inputs.file task.archivePath
+    copyAllOutputs.from task.archivePath
+}
+
+model {
+    components {
+        wpimath(NativeLibrarySpec) {
+            sources {
+                cpp {
+                    source {
+                        srcDirs 'src/main/native/cpp'
+                        include '**/*.cpp'
+                    }
+                    exportedHeaders {
+                        srcDirs 'src/main/native/include'
+                    }
+                }
+            }
+            appendDebugPathToBinaries(binaries)
+        }
+    }
+
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.4.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
+
+    api "org.ejml:ejml-simple:0.38"
+}
+
+def wpilibNumberFileInput = file("src/generate/GenericNumber.java.in")
+def natFileInput = file("src/generate/Nat.java.in")
+def natGetterInput = file("src/generate/NatGetter.java.in")
+def wpilibNumberFileOutputDir = file("$buildDir/generated/java/edu/wpi/first/math/numbers")
+def wpilibNatFileOutput = file("$buildDir/generated/java/edu/wpi/first/math/Nat.java")
+def maxNum = 20
+
+task generateNumbers() {
+    description = "Generates generic number classes from template"
+    group = "WPILib"
+
+    inputs.file wpilibNumberFileInput
+    outputs.dir wpilibNumberFileOutputDir
+
+    doLast {
+        if(wpilibNumberFileOutputDir.exists()) {
+            wpilibNumberFileOutputDir.delete()
+        }
+        wpilibNumberFileOutputDir.mkdirs()
+
+        for(i in 0..maxNum) {
+            def outputFile = new File(wpilibNumberFileOutputDir, "N${i}.java")
+            def read = wpilibNumberFileInput.text.replace('${num}', i.toString())
+            outputFile.write(read)
+        }
+    }
+}
+
+task generateNat() {
+    description = "Generates Nat.java"
+    group = "WPILib"
+    inputs.files([natFileInput, natGetterInput])
+    outputs.file wpilibNatFileOutput
+    dependsOn generateNumbers
+
+    doLast {
+        if(wpilibNatFileOutput.exists()) {
+            wpilibNatFileOutput.delete()
+        }
+
+        def template = natFileInput.text + "\n"
+
+        def importsString = "";
+
+        for(i in 0..maxNum) {
+            importsString += "import edu.wpi.first.math.numbers.N${i};\n"
+            template += natGetterInput.text.replace('${num}', i.toString()) + "\n"
+        }
+        template += "}\n" // Close the class body
+
+        template = template.replace('{{REPLACEWITHIMPORTS}}', importsString)
+
+        wpilibNatFileOutput.write(template)
+    }
+}
+
+sourceSets.main.java.srcDir "${buildDir}/generated/java"
+compileJava.dependsOn generateNumbers
+compileJava.dependsOn generateNat
+
+apply from: 'publish.gradle'
+
+wrapper {
+    gradleVersion = '6.0.1'
+}
