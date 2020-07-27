@@ -5,6 +5,14 @@
 
 #include <Eigen/Core>
 
+#ifndef WPIMATHEXPORT
+#ifdef BUILDING_WPIMATH
+#include "wpimath_exports.h"
+#else
+#define WPIMATHEXPORT
+#endif
+#endif
+
 namespace drake {
 namespace math {
 
@@ -22,7 +30,7 @@ namespace math {
 /// "On the Numerical Solution of the Discrete-Time Algebraic Riccati Equation"
 /// by Thrasyvoulos Pappas, Alan J. Laub, and Nils R. Sandell
 ///
-Eigen::MatrixXd DiscreteAlgebraicRiccatiEquation(
+WPIMATHEXPORT Eigen::MatrixXd DiscreteAlgebraicRiccatiEquation(
     const Eigen::Ref<const Eigen::MatrixXd>& A,
     const Eigen::Ref<const Eigen::MatrixXd>& B,
     const Eigen::Ref<const Eigen::MatrixXd>& Q,

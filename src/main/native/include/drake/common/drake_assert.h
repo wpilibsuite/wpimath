@@ -2,6 +2,14 @@
 
 #include <type_traits>
 
+#ifndef WPIMATHEXPORT
+#ifdef BUILDING_WPIMATH
+#include "wpimath_exports.h"
+#else
+#define WPIMATHEXPORT
+#endif
+#endif
+
 /// @file
 /// Provides Drake's assertion implementation.  This is intended to be used
 /// both within Drake and by other software.  Drake's asserts can be armed
@@ -84,10 +92,10 @@ namespace drake {
 namespace internal {
 // Abort the program with an error message.
 [[noreturn]]
-void Abort(const char* condition, const char* func, const char* file, int line);
+WPIMATHEXPORT void Abort(const char* condition, const char* func, const char* file, int line);
 // Report an assertion failure; will either Abort(...) or throw.
 [[noreturn]]
-void AssertionFailed(
+WPIMATHEXPORT void AssertionFailed(
     const char* condition, const char* func, const char* file, int line);
 }  // namespace internal
 namespace assert {
