@@ -12,8 +12,9 @@
 // This code has https://github.com/RobotLocomotion/drake/pull/11118 applied to
 // fix an infinite loop in reorder_eigen().
 
-namespace drake {
-namespace math {
+using namespace drake;
+using namespace drake::math;
+
 namespace {
 /* helper functions */
 template <typename T>
@@ -39,8 +40,8 @@ void check_stabilizable(const Eigen::Ref<const Eigen::MatrixXd>& A,
     DRAKE_THROW_UNLESS(qr.rank() == n);
   }
 }
-WPIMATHEXPORT void check_detectable(const Eigen::Ref<const Eigen::MatrixXd>& A,
-                      const Eigen::Ref<const Eigen::MatrixXd>& Q) {
+void check_detectable(const Eigen::Ref<const Eigen::MatrixXd> &A,
+                      const Eigen::Ref<const Eigen::MatrixXd> &Q) {
   // This function check if (A,C) is a detectable pair, where Q = C' * C.
   // (A,C) is detectable if and only if the unobservable eigenvalues of A,
   // if any, have absolute values less than one, where an eigenvalue is
@@ -64,7 +65,7 @@ WPIMATHEXPORT void check_detectable(const Eigen::Ref<const Eigen::MatrixXd>& A,
 //     [ b ]   [   0   ]
 // The implementation is based on
 // https://en.wikipedia.org/wiki/Givens_rotation#Stable_calculation
-WPIMATHEXPORT void Givens_rotation(double a, double b, Eigen::Ref<Eigen::Matrix2d> R,
+void Givens_rotation(double a, double b, Eigen::Ref<Eigen::Matrix2d> R,
                      double eps = 1e-10) {
   double c, s;
   if (fabs(b) < eps) {
@@ -88,7 +89,7 @@ WPIMATHEXPORT void Givens_rotation(double a, double b, Eigen::Ref<Eigen::Matrix2
 }
 
 // The arguments S, T, and Z will be changed.
-WPIMATHEXPORT void swap_block_11(Eigen::Ref<Eigen::MatrixXd> S, Eigen::Ref<Eigen::MatrixXd> T,
+void swap_block_11(Eigen::Ref<Eigen::MatrixXd> S, Eigen::Ref<Eigen::MatrixXd> T,
                    Eigen::Ref<Eigen::MatrixXd> Z, int p) {
   // Dooren, Case I, p124-125.
   int n2 = S.rows();
@@ -109,7 +110,7 @@ WPIMATHEXPORT void swap_block_11(Eigen::Ref<Eigen::MatrixXd> S, Eigen::Ref<Eigen
 }
 
 // The arguments S, T, and Z will be changed.
-WPIMATHEXPORT void swap_block_21(Eigen::Ref<Eigen::MatrixXd> S, Eigen::Ref<Eigen::MatrixXd> T,
+void swap_block_21(Eigen::Ref<Eigen::MatrixXd> S, Eigen::Ref<Eigen::MatrixXd> T,
                    Eigen::Ref<Eigen::MatrixXd> Z, int p) {
   // Dooren, Case II, p126-127.
   int n2 = S.rows();
@@ -146,7 +147,7 @@ WPIMATHEXPORT void swap_block_21(Eigen::Ref<Eigen::MatrixXd> S, Eigen::Ref<Eigen
 }
 
 // The arguments S, T, and Z will be changed.
-WPIMATHEXPORT void swap_block_12(Eigen::Ref<Eigen::MatrixXd> S, Eigen::Ref<Eigen::MatrixXd> T,
+void swap_block_12(Eigen::Ref<Eigen::MatrixXd> S, Eigen::Ref<Eigen::MatrixXd> T,
                    Eigen::Ref<Eigen::MatrixXd> Z, int p) {
   int n2 = S.rows();
   // Swap the role of S and T.
@@ -193,7 +194,7 @@ WPIMATHEXPORT void swap_block_12(Eigen::Ref<Eigen::MatrixXd> S, Eigen::Ref<Eigen
 }
 
 // The arguments S, T, and Z will be changed.
-WPIMATHEXPORT void swap_block_22(Eigen::Ref<Eigen::MatrixXd> S, Eigen::Ref<Eigen::MatrixXd> T,
+void swap_block_22(Eigen::Ref<Eigen::MatrixXd> S, Eigen::Ref<Eigen::MatrixXd> T,
                    Eigen::Ref<Eigen::MatrixXd> Z, int p) {
   // Direct Swapping Algorithm based on
   // "Numerical Methods for General and Structured Eigenvalue Problems" by
@@ -383,6 +384,8 @@ void reorder_eigen(Eigen::Ref<Eigen::MatrixXd> S, Eigen::Ref<Eigen::MatrixXd> T,
 }
 }  // namespace
 
+namespace drake {
+namespace math {
 /**
  * DiscreteAlgebraicRiccatiEquation function
  * computes the unique stabilizing solution X to the discrete-time algebraic
