@@ -5,6 +5,7 @@ bin/
 .settings/
 .gradle/
 .vscode/
+.idea/
 *.sw?
 fonts/*.inc
 imgui_font_bin2c*
