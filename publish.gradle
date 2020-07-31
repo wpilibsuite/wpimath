@@ -137,7 +137,15 @@ model {
                 artifact cppHeadersZip
                 artifact cppSourcesZip
 
-                artifactId = baseArtifactId
+                artifactId = "${baseArtifactId}-cpp"
+                groupId artifactGroupId
+                version pubVersion
+            }
+            java(MavenPublication) {
+                artifact jar
+                artifact sourcesJar
+                artifact javadocJar
+                artifactId = "${baseArtifactId}-java"
                 groupId artifactGroupId
                 version pubVersion
             }
