@@ -74,7 +74,7 @@ if (WITH_TESTS)
     endif()
 endif()
 
-if (NOT WITHOUT_JAVA) 
+if (NOT WITHOUT_JAVA)
     find_package (Java REQUIRED)
     find_package (JNI REQUIRED)
     include(UseJava)
