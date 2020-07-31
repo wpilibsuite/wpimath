@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.3.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(wpimath_dest wpimath)
 set(main_lib_dest wpimath/lib)
 set(include_dest wpimath/include)
 set(java_lib_dest wpimath/java)
@@ -32,13 +33,17 @@ target_include_directories(wpimath PUBLIC
                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/main/native/include>
                             $<INSTALL_INTERFACE:${include_dest}/wpimath>)
 
+if (MSVC)
+    target_compile_options(wpimath PRIVATE /bigobj)
+endif()
+
 set_property(TARGET wpimath PROPERTY folder "libraries")
 
 install (TARGETS wpimath EXPORT wpimath DESTINATION "${main_lib_dest}")
 install (DIRECTORY src/main/native/include DESTINATION "${include_dest}")
 
 if (MSVC)
-    set (wpimath_config_dir ${wpilib_dest})
+    set (wpimath_config_dir ${wpimath_dest})
 else()
     set (wpimath_config_dir share/wpimath)
 endif()
@@ -52,8 +57,9 @@ if (WITH_TESTS)
 
     file (GLOB_RECURSE test_src src/test/native/cpp/*.cpp)
     add_executable(wpimath_test ${test_src})
-    target_compile_definitions(wpimath_test PRIVATE -DGTEST_LINKED_AS_SHARED_LIBRARY)
-    if (MSVC)
+    if (NOT MSVC)
+        target_compile_definitions(wpimath_test PRIVATE -DGTEST_LINKED_AS_SHARED_LIBRARY)
+    else()
         target_compile_options(wpimath_test PRIVATE /wd4251 /wd4101)
     endif()
 
