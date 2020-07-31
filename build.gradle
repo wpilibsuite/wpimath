@@ -209,6 +209,8 @@ compileJava.dependsOn generateNumbers
 compileJava.dependsOn generateNat
 
 test {
+    enabled = !(project.hasProperty('onlylinuxathena') || project.hasProperty('onlylinuxraspbian') || project.hasProperty('onlylinuxaarch64bionic'))
+
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
     testLogging {
