@@ -1,11 +1,100 @@
 name: CI
 
-on:
-  pull_request:
-    branches:
-      - '**'
+on: [push, pull_request]
 
 jobs:
+  build-docker:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - container: wpilib/roborio-cross-ubuntu:2020-18.04
+            artifact-name: Athena
+            build-options: "-Ponlylinuxathena"
+          - container: wpilib/raspbian-cross-ubuntu:10-18.04
+            artifact-name: Raspbian
+            build-options: "-Ponlylinuxraspbian"
+          - container: wpilib/aarch64-cross-ubuntu:bionic-18.04
+            artifact-name: Aarch64
+            build-options: "-Ponlylinuxaarch64bionic"
+          - container: wpilib/ubuntu-base:18.04
+            artifact-name: Linux
+            build-options: ""
+    name: "Build - ${{ matrix.artifact-name }}"
+    runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Fetch all history and metadata
+        run: git fetch --prune --unshallow
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev mesa-common-dev
+      - name: Build with Gradle
+        run: ./gradlew build --max-workers 1 ${{ matrix.build-options }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: build/allOutputs
+
+  build-host:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact-name: Win64
+            architecture: x64
+          - os: windows-latest
+            artifact-name: Win32
+            architecture: x32
+          - os: macos-latest
+            artifact-name: macOS
+            architecture: x64
+    name: "Build - ${{ matrix.artifact-name }}"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Fetch all history and metadata
+        run: git fetch --prune --unshallow
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+          architecture: ${{ matrix.architecture }}
+      - name: Build with Gradle
+        run: ./gradlew build --max-workers 1
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: build/allOutputs
+
+  combine:
+    name: Combine
+    needs: [build-docker, build-host]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: wpilibsuite/build-tools
+      - uses: actions/download-artifact@v2
+        with:
+          path: combiner/products/build/allOutputs
+      - name: Flatten Artifacts
+        run: rsync -a --delete combiner/products/build/allOutputs/*/* combiner/products/build/allOutputs/
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Combine
+        run: cd combiner && ./gradlew publish -Pthirdparty
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Maven
+          path: ~/releases
+
   wpiformat:
     name: "wpiformat"
     runs-on: ubuntu-latest
