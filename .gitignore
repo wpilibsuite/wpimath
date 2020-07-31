@@ -10,3 +10,4 @@ fonts/*.inc
 imgui_font_bin2c*
 
 buildcmake/
+.DS_Store
