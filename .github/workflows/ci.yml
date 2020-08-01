@@ -78,10 +78,14 @@ jobs:
     container: wpilib/ubuntu-base:18.04
     steps:
       - uses: actions/checkout@v2
-      - name: Run CMake
+      - name: Configure CMake
         run: |
           mkdir build && cd build
           cmake .. -DWITH_TESTS=ON
+      
+      - name: Run CMake Build 
+        run: |
+          cd build
           cmake --build .
 
       - name: Run tests
