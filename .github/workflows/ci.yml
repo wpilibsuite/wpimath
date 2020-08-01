@@ -76,7 +76,7 @@ jobs:
     name: Build CMake
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@c2
+      - uses: actions/checkout@v2
       - name: Create CMake build directory
         run: mkdir buildcmake && cd buildcmake
       - name: Run CMake
