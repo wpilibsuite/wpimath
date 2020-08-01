@@ -31,6 +31,8 @@
 
 #include <cmath>
 
+#include <wpi/math>
+
 #include "units/angle.h"
 #include "units/base.h"
 #include "units/dimensionless.h"
@@ -752,6 +754,25 @@ auto fma(const UnitTypeLhs x, const UnitMultiply y, const UnitAdd z) noexcept
           typename units::traits::unit_t_traits<UnitAdd>::unit_type>::value,
       "Unit types are not compatible.");
   return resultType(std::fma(x(), y(), resultType(z)()));
+}
+
+/**
+  * Constrains theta to within the range (-pi, pi].
+  *
+  * @param theta Angle to normalize.
+  */
+template <typename T>
+constexpr T NormalizeAngle(T theta) {
+  // Constrain theta to within (-3pi, pi)
+  const int n_pi_pos = (theta + T{wpi::math::pi}) / 2.0 / wpi::math::pi;
+  theta -= T{n_pi_pos * 2.0 * wpi::math::pi};
+
+  // Cut off the bottom half of the above range to constrain within
+  // (-pi, pi]
+  const int n_pi_neg = (theta - T{wpi::math::pi}) / 2.0 / wpi::math::pi;
+  theta -= T{n_pi_neg * 2.0 * wpi::math::pi};
+
+  return theta;
 }
 
 }  // namespace math
