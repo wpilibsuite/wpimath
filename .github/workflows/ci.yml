@@ -72,6 +72,25 @@ jobs:
           name: ${{ matrix.artifact-name }}
           path: build/allOutputs
 
+  build-cmake:
+    name: Build - CMake
+    runs-on: ubuntu-latest
+    container: wpilib/ubuntu-base:18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configure CMake
+        run: |
+          mkdir build && cd build
+          cmake .. -DWITH_TESTS=ON
+
+      - name: Run CMake Build
+        run: |
+          cd build
+          cmake --build .
+
+      - name: Run tests
+        run: ./build/wpimath_test --exit-code
+
   combine:
     name: Combine
     needs: [build-docker, build-host]
