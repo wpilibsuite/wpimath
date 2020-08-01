@@ -757,10 +757,10 @@ auto fma(const UnitTypeLhs x, const UnitMultiply y, const UnitAdd z) noexcept
 }
 
 /**
-  * Constrains theta to within the range (-pi, pi].
-  *
-  * @param theta Angle to normalize.
-  */
+ * Constrains theta to within the range (-pi, pi].
+ *
+ * @param theta Angle to normalize.
+ */
 template <typename T>
 constexpr T NormalizeAngle(T theta) {
   // Constrain theta to within (-3pi, pi)
