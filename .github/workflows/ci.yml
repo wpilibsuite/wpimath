@@ -82,8 +82,8 @@ jobs:
         run: |
           mkdir build && cd build
           cmake .. -DWITH_TESTS=ON
-      
-      - name: Run CMake Build 
+
+      - name: Run CMake Build
         run: |
           cd build
           cmake --build .
