@@ -82,12 +82,12 @@ jobs:
           java-version: 11
       - name: Run CMake
         run: |
-          mkdir buildcmake && cd buildcmake
+          mkdir build && cd build
           cmake .. -DWITH_TESTS=ON
           cmake --build .
 
       - name: Run tests
-        run: ./buildcmake/wpimath_test --exit-code
+        run: ./build/wpimath_test --exit-code
 
   combine:
     name: Combine
