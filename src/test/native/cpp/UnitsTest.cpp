@@ -1482,7 +1482,7 @@ TEST_F(UnitContainer, nameAndAbbreviation) {
 #endif
 
 TEST_F(UnitContainer, negative) {
-  meter_t a(5.3);
+  meter_t a(5.5);
   meter_t b(-5.3);
   EXPECT_NEAR(a.to<double>(), -b.to<double>(), 5.0e-320);
   EXPECT_NEAR(b.to<double>(), -a.to<double>(), 5.0e-320);

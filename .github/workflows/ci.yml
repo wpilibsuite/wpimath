@@ -87,7 +87,7 @@ jobs:
           cmake --build .
 
       - name: Run tests
-        run: ./buildcmake/wpimath_test
+        run: ./buildcmake/wpimath_test --exit-code
 
   combine:
     name: Combine
