@@ -761,7 +761,6 @@ auto fma(const UnitTypeLhs x, const UnitMultiply y, const UnitAdd z) noexcept
  *
  * @param theta Angle to normalize.
  */
-
 constexpr units::radian_t NormalizeAngle(units::radian_t theta) {
   units::radian_t pi(wpi::math::pi);
 
