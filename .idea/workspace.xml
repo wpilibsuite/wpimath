@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:upstream" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="eb5c09d7-db24-4f03-80a7-10f3ce8e29bd" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/native/include/units/math.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/native/include/units/math.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/native/cpp/UnitsTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/native/cpp/UnitsTest.cpp" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1fWLOWMduCyrefJLwcnaccPAdQ9" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="show.unlinked.gradle.project.popup" value="true" />
+  </component>
+  <component name="RunManager">
+    <configuration name="MathUtilTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;edu.wpi.first.math.MathUtilTest&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>false</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.MathUtilTest" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="eb5c09d7-db24-4f03-80a7-10f3ce8e29bd" name="Default Changelist" comment="" />
+      <created>1596328869312</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1596328869312</updated>
+      <workItem from="1596328875765" duration="20000" />
+      <workItem from="1596328928510" duration="1109000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="343" y="-987" key="#Java" timestamp="1596329714249">
+      <screen x="-157" y="-1057" width="1920" height="1057" />
+    </state>
+    <state x="343" y="-987" key="#Java/-157.-1057.1920.1057/0.23.1680.963@-157.-1057.1920.1057" timestamp="1596329714249" />
+    <state width="1798" height="271" key="GridCell.Tab.0.bottom" timestamp="1596329870899">
+      <screen x="-157" y="-1057" width="1920" height="1057" />
+    </state>
+    <state width="1798" height="271" key="GridCell.Tab.0.bottom/-157.-1057.1920.1057/0.23.1680.963@-157.-1057.1920.1057" timestamp="1596329870899" />
+    <state width="1798" height="271" key="GridCell.Tab.0.center" timestamp="1596329870897">
+      <screen x="-157" y="-1057" width="1920" height="1057" />
+    </state>
+    <state width="1798" height="271" key="GridCell.Tab.0.center/-157.-1057.1920.1057/0.23.1680.963@-157.-1057.1920.1057" timestamp="1596329870897" />
+    <state width="1798" height="271" key="GridCell.Tab.0.left" timestamp="1596329870895">
+      <screen x="-157" y="-1057" width="1920" height="1057" />
+    </state>
+    <state width="1798" height="271" key="GridCell.Tab.0.left/-157.-1057.1920.1057/0.23.1680.963@-157.-1057.1920.1057" timestamp="1596329870895" />
+    <state width="1798" height="271" key="GridCell.Tab.0.right" timestamp="1596329870898">
+      <screen x="-157" y="-1057" width="1920" height="1057" />
+    </state>
+    <state width="1798" height="271" key="GridCell.Tab.0.right/-157.-1057.1920.1057/0.23.1680.963@-157.-1057.1920.1057" timestamp="1596329870898" />
+  </component>
+</project>

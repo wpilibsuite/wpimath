@@ -8,7 +8,6 @@ plugins {
     id 'cpp'
     id 'java-library'
     id 'visual-studio'
-    id 'google-test-test-suite'
     id 'edu.wpi.first.NativeUtils' version '2020.9.4'
     id 'edu.wpi.first.GradleJni' version '0.10.1'
     id 'edu.wpi.first.GradleVsCode' version '0.11.0'
@@ -109,24 +108,6 @@ model {
                 lib library: 'wpimath', linkage: 'shared'
                 lib library: 'wpimathjni', linkage: 'shared'
             }
-        }
-    }
-    testSuites {
-        cpptest(GoogleTestTestSuiteSpec) {
-            for(NativeComponentSpec c : $.components) {
-                testing c
-                break
-            }
-            sources.cpp {
-                source {
-                    srcDirs 'src/test/native/cpp'
-                    include '**/*.cpp'
-                }
-                exportedHeaders {
-                    srcDirs 'src/test/native/include'
-                }
-            }
-            nativeUtils.useRequiredLibrary(it, 'googletest')
         }
     }
     tasks {
