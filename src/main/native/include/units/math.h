@@ -761,16 +761,18 @@ auto fma(const UnitTypeLhs x, const UnitMultiply y, const UnitAdd z) noexcept
  *
  * @param theta Angle to normalize.
  */
-template <typename T>
-constexpr T NormalizeAngle(T theta) {
+
+constexpr units::radian_t NormalizeAngle(units::radian_t theta) {
+  units::radian_t pi(wpi::math::pi);
+
   // Constrain theta to within (-3pi, pi)
-  const int n_pi_pos = (theta + T{wpi::math::pi}) / 2.0 / wpi::math::pi;
-  theta -= T{n_pi_pos * 2.0 * wpi::math::pi};
+  const int n_pi_pos = (theta + pi) / 2.0 / pi;
+  theta = theta - units::radian_t{n_pi_pos * 2.0 * wpi::math::pi};
 
   // Cut off the bottom half of the above range to constrain within
   // (-pi, pi]
-  const int n_pi_neg = (theta - T{wpi::math::pi}) / 2.0 / wpi::math::pi;
-  theta -= T{n_pi_neg * 2.0 * wpi::math::pi};
+  const int n_pi_neg = (theta - pi) / 2.0 / pi;
+  theta = theta - units::radian_t{n_pi_neg * 2.0 * wpi::math::pi};
 
   return theta;
 }

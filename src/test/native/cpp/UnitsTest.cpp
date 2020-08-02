@@ -2986,6 +2986,13 @@ TEST_F(UnitMath, fma) {
   EXPECT_EQ(square_meter_t(7.0), fma(x, y, z));
 }
 
+TEST_F(UnitMath, normalize) {
+  radian_t x(5 * wpi::math::pi);
+  radian_t y(-5 * wpi::math::pi);
+  EXPECT_EQ(NormalizeAngle(x), units::radian_t{wpi::math::pi});
+  EXPECT_EQ(NormalizeAngle(y), units::radian_t{wpi::math::pi});
+}
+
 // Constexpr
 #if !defined(_MSC_VER) || _MSC_VER > 1800
 TEST_F(Constexpr, construction) {
