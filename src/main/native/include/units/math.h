@@ -776,6 +776,5 @@ constexpr units::radian_t NormalizeAngle(units::radian_t theta) {
 
   return theta;
 }
-
 }  // namespace math
 }  // namespace units

@@ -16,8 +16,12 @@ class MathUtilTest {
   void testAngleNormalize() {
     double x = 5 * Math.PI;
     double y = -5 * Math.PI;
+    double a = Math.PI / 2;
+    double b = -Math.PI / 2;
 
     assertEquals(MathUtil.normalizeAngle(x), Math.PI);
     assertEquals(MathUtil.normalizeAngle(y), Math.PI);
+    assertEquals(MathUtil.normalizeAngle(a), a);
+    assertEquals(MathUtil.normalizeAngle(b), b);
   }
 }

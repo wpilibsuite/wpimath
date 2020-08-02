@@ -2989,8 +2989,13 @@ TEST_F(UnitMath, fma) {
 TEST_F(UnitMath, normalize) {
   radian_t x(5 * wpi::math::pi);
   radian_t y(-5 * wpi::math::pi);
+  radian_t a(wpi::math::pi / 2);
+  radian_t b(-wpi::math::pi / 2);
+
   EXPECT_EQ(NormalizeAngle(x), units::radian_t{wpi::math::pi});
   EXPECT_EQ(NormalizeAngle(y), units::radian_t{wpi::math::pi});
+  EXPECT_EQ(NormalizeAngle(a), a);
+  EXPECT_EQ(NormalizeAngle(b), b);
 }
 
 // Constexpr
