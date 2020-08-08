@@ -28,9 +28,9 @@ import edu.wpi.first.math.numbers.N1;
  * @param <R> The number of rows in this matrix.
  * @param <C> The number of columns in this matrix.
  */
-@SuppressWarnings("PMD.TooManyMethods")
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessivePublicCount"})
 public class Matrix<R extends Num, C extends Num> {
-  final SimpleMatrix m_storage;
+  protected final SimpleMatrix m_storage;
 
   /**
    * Constructs an empty zero matrix of the given dimensions.
@@ -47,10 +47,12 @@ public class Matrix<R extends Num, C extends Num> {
 
   /**
    * Constructs a new {@link Matrix} with the given storage.
-   * Caller should make sure that the provided generic bounds match the shape of the provided {@link Matrix}.
-   * 
-   * <p>NOTE:It is not recommend to use this constructor unless the {@link SimpleMatrix} API is absolutely
-   * necessary due to the desired function not being accessible through the {@link Matrix} wrapper.
+   * Caller should make sure that the provided generic bounds match
+   * the shape of the provided {@link Matrix}.
+   *
+   * <p>NOTE:It is not recommend to use this constructor unless the
+   * {@link SimpleMatrix} API is absolutely necessary due to the desired
+   * function not being accessible through the {@link Matrix} wrapper.
    *
    * @param storage The {@link SimpleMatrix} to back this value.
    */
@@ -64,7 +66,21 @@ public class Matrix<R extends Num, C extends Num> {
    * @param other The {@link Matrix} to copy the storage of.
    */
   public Matrix(Matrix<R, C> other) {
-    this.m_storage = Objects.requireNonNull(other).m_storage;
+    this.m_storage = Objects.requireNonNull(other).m_storage.copy();
+  }
+
+  /**
+   * Gets the underlying {@link SimpleMatrix} that this {@link Matrix} wraps.
+   * 
+   * <p>NOTE:The use of this method is heavily discouraged as this removes any
+   * guarantee of type safety. This should only be called if the {@link SimpleMatrix}
+   * API is absolutely necessary due to the desired function not being accessible through
+   * the {@link Matrix} wrapper.
+   * 
+   * @return The underlying {@link SimpleMatrix} storage.
+   */
+  public SimpleMatrix getStorage() {
+    return m_storage;
   }
 
   /**
@@ -141,8 +157,8 @@ public class Matrix<R extends Num, C extends Num> {
 
   /**
    * Returns the diagonal elements inside a vector or square matrix.
-   * 
-   * <p>If "this" {@link Matrix} is a vector then a square matrix is returned. If a "this" 
+   *
+   * <p>If "this" {@link Matrix} is a vector then a square matrix is returned. If a "this"
    * {@link Matrix} is a matrix then a vector of diagonal elements is returned.
    *
    * @return The diagonal elements inside a vector or a square matrix.
@@ -156,7 +172,7 @@ public class Matrix<R extends Num, C extends Num> {
    *
    * @return The largest element of this matrix.
    */
-  public final double maxInternal() {
+  public final double max() {
     return CommonOps_DDRM.elementMax(this.m_storage.getDDRM());
   }
 
@@ -165,7 +181,7 @@ public class Matrix<R extends Num, C extends Num> {
    *
    * @return The absolute value of the element with the largest absolute value.
    */
-  public final double maxAbsInternal() {
+  public final double maxAbs() {
     return CommonOps_DDRM.elementMaxAbs(this.m_storage.getDDRM());
   }
 
@@ -214,16 +230,17 @@ public class Matrix<R extends Num, C extends Num> {
   }
 
   /**
-   * Returns a matrix which is the result of an element by element multiplication of "this" and b.
-   * 
-   * <p>c<sub>i,j</sub> = a<sub>i,j</sub>*b<sub>i,j</sub>
-   * 
+   * Returns a matrix which is the result of an element by element multiplication of
+   * "this" and other.
    *
-   * @param b The other {@link Matrix} to preform element multiplication on.
-   * @return The element by element multiplication of "this" and b.
+   * <p>c<sub>i,j</sub> = a<sub>i,j</sub>*other<sub>i,j</sub>
+   *
+   *
+   * @param other The other {@link Matrix} to preform element multiplication on.
+   * @return The element by element multiplication of "this" and other.
    */
-  public final Matrix<R, C> elementTimes(Matrix<R, C> b) {
-    return new Matrix<>(this.m_storage.elementMult(Objects.requireNonNull(b).m_storage));
+  public final Matrix<R, C> elementTimes(Matrix<R, C> other) {
+    return new Matrix<>(this.m_storage.elementMult(Objects.requireNonNull(other).m_storage));
   }
 
   /**
@@ -319,14 +336,15 @@ public class Matrix<R extends Num, C extends Num> {
   }
 
   /**
-   * Returns the solution x to the equation Ax = b, where A "this" matrix.
-   * 
+   * Returns the solution x to the equation Ax = b, where A is "this" matrix.
+   *
    * <p>The matrix equation could also be written as x = A<sup>-1</sup>b. Where the
    * pseudo inverse is used if A is not square.
    *
    * @param b The right-hand side of the equation to solve.
    * @return The solution to the linear system.
    */
+  @SuppressWarnings("ParameterName")
   public final <C2 extends Num> Matrix<C, C2> solve(Matrix<R, C2> b) {
     return new Matrix<>(this.m_storage.solve(Objects.requireNonNull(b).m_storage));
   }
@@ -360,7 +378,7 @@ public class Matrix<R extends Num, C extends Num> {
 
   /**
    * Computes the Frobenius normal of the matrix.
-   * 
+   *
    * <p>normF = Sqrt{  &sum;<sub>i=1:m</sub> &sum;<sub>j=1:n</sub> { a<sub>ij</sub><sup>2</sup>}   }
    *
    * @return The matrix's Frobenius normal.
@@ -371,7 +389,7 @@ public class Matrix<R extends Num, C extends Num> {
 
   /**
    * Computes the induced p = 1 matrix norm.
-   * 
+   *
    * <p>||A||<sub>1</sub>= max(j=1 to n; sum(i=1 to m; |a<sub>ij</sub>|))
    *
    * @return The norm.
@@ -400,7 +418,7 @@ public class Matrix<R extends Num, C extends Num> {
 
   /**
    * Returns a matrix which is the result of an element by element power of "this" and b.
-   * 
+   *
    * <p>c<sub>i,j</sub> = a<sub>i,j</sub> ^ b
    *
    * @param b Scalar.
@@ -413,7 +431,7 @@ public class Matrix<R extends Num, C extends Num> {
 
   /**
    * Returns a matrix which is the result of an element by element power of "this" and b.
-   * 
+   *
    * <p>c<sub>i,j</sub> = a<sub>i,j</sub> ^ b
    *
    * @param b Scalar.
@@ -448,8 +466,8 @@ public class Matrix<R extends Num, C extends Num> {
    * Extracts a matrix of a given size and start position with new underlying
    * storage.
    *
-   * @param height      The number of rows of the extracted matrix.
-   * @param width       The number of columns of the extracted matrix.
+   * @param height The number of rows of the extracted matrix.
+   * @param width  The number of columns of the extracted matrix.
    * @param startingRow The starting row of the extracted matrix.
    * @param startingCol The starting column of the extracted matrix.
    * @return The extracted matrix.
@@ -466,31 +484,34 @@ public class Matrix<R extends Num, C extends Num> {
   /**
    * Assign a matrix of a given size and start position.
    *
-   * @param startingRow The first row that will be assigned.
-   * @param startingCol The first column that will be assigned.
-   * @param other       The matrix to assign the block to.
+   * @param startingRow The row to start at.
+   * @param startingCol  The column to start at.
+   * @param other  The matrix to assign the block to.
    */
-  public <R2 extends Num, C2 extends Num> void assignBlock(int startingRow, int startingCol, Matrix<R2, C2> other) {
+  public <R2 extends Num, C2 extends Num> void assignBlock(int startingRow, int startingCol,
+                                                           Matrix<R2, C2> other) {
     this.m_storage.insertIntoThis(
-      startingRow,
-      startingCol,
-      Objects.requireNonNull(other).m_storage);
+        startingRow,
+        startingCol,
+        Objects.requireNonNull(other).m_storage);
   }
 
   /**
-   * Extracts a submatrix from the supplied matrix and inserts it in a submatrix in "this". The shape of "this"
-   * is used to determine the size of the matrix extracted.
+   * Extracts a submatrix from the supplied matrix and inserts it in a submatrix in "this". The
+   * shape of "this" is used to determine the size of the matrix extracted.
    *
    * @param startingRow The starting row in the supplied matrix to extract the submatrix.
    * @param startingCol The starting column in the supplied matrix to extract the submatrix.
    * @param other       The matrix to extract the submatrix from.
    */
-  public <R2 extends Num, C2 extends Num> void extractFrom(int startingRow, int startingCol, Matrix<R2, C2> other) {
-    CommonOps_DDRM.extract(other.m_storage.getDDRM(), startingRow, startingCol, this.m_storage.getDDRM());
+  public <R2 extends Num, C2 extends Num> void extractFrom(int startingRow, int startingCol,
+                                                           Matrix<R2, C2> other) {
+    CommonOps_DDRM.extract(other.m_storage.getDDRM(), startingRow, startingCol,
+        this.m_storage.getDDRM());
   }
 
   /**
-   * Decompose "this" matrix using Cholesky Decomposition. If the "this" matrix is zeros, it 
+   * Decompose "this" matrix using Cholesky Decomposition. If the "this" matrix is zeros, it
    * will return the zero matrix.
    *
    * @param lowerTriangular Whether or not we want to decompose to the lower triangular
@@ -517,7 +538,8 @@ public class Matrix<R extends Num, C extends Num> {
         return new Matrix<>(new SimpleMatrix(temp.numRows(), temp.numCols()));
       }
 
-      throw new RuntimeException("Cholesky decomposition failed! Input matrix:\n" + m_storage.toString());
+      throw new RuntimeException("Cholesky decomposition failed! Input matrix:\n"
+          + m_storage.toString());
     }
 
     return new Matrix<>(SimpleMatrix.wrap(chol.getT(null)));
@@ -560,8 +582,8 @@ public class Matrix<R extends Num, C extends Num> {
    *
    * @param rows The number of rows of the desired matrix.
    * @param cols The number of columns of the desired matrix.
-   * @param <R>  The number of rows of the desired matrix as a generic.
-   * @param <C>  The number of columns of the desired matrix as a generic.
+   * @param <R> The number of rows of the desired matrix as a generic.
+   * @param <C> The number of columns of the desired matrix as a generic.
    * @return A builder to construct the matrix.
    */
   public static <R extends Num, C extends Num> MatBuilder<R, C> mat(Nat<R> rows, Nat<C> cols) {
@@ -571,27 +593,28 @@ public class Matrix<R extends Num, C extends Num> {
   /**
    * Reassigns dimensions of a {@link Matrix} to allow for operations with
    * other matrices that have wildcard dimensions.
-   * 
+   *
    * @param mat The {@link Matrix} to remove the dimensions from.
    * @return The matrix with reassigned dimensions.
    */
-  public static <R1 extends Num, C1 extends Num> Matrix<R1, C1> changeBoundsUnchecked(Matrix<?, ?> mat) {
+  public static <R1 extends Num, C1 extends Num> Matrix<R1, C1> changeBoundsUnchecked(
+      Matrix<?, ?> mat) {
     return new Matrix<>(mat.m_storage);
   }
 
-  /** 
+  /**
    * Checks if another {@link Matrix} is identical to "this" one within a specified tolerance.
    *
    * <p>This will check if each element is in tolerance of the corresponding element
    * from the other {@link Matrix} or if the elements have the same symbolic meaning. For two
    * elements to have the same symbolic meaning they both must be either Double.NaN,
    * Double.POSITIVE_INFINITY, or Double.NEGATIVE_INFINITY.
-   * 
+   *
    * <p>NOTE:It is recommend to use {@link Matrix#isEqual(Matrix, double)} over this
    * method when checking if two matrices are equal as {@link Matrix#isEqual(Matrix, double)}
    * will return false if an element is uncountable. This method should only be used when
    * uncountable elements need to compared.
-   * 
+   *
    * @param other     The {@link Matrix} to check against this one.
    * @param tolerance The tolerance to check equality with.
    * @return true if this matrix is identical to the one supplied.
@@ -601,14 +624,14 @@ public class Matrix<R extends Num, C extends Num> {
         other.m_storage.getDDRM(), tolerance);
   }
 
-  /** 
+  /**
    * Checks if another {@link Matrix} is equal to "this" within a specified tolerance.
-   * 
+   *
    * <p>This will check if each element is in tolerance of the corresponding element
    * from the other {@link Matrix}.
-   * 
+   *
    * <p>tol &ge; |a<sub>ij</sub> - b<sub>ij</sub>|
-   * 
+   *
    * @param other     The {@link Matrix} to check against this one.
    * @param tolerance The tolerance to check equality with.
    * @return true if this matrix is equal to the one supplied.
@@ -623,21 +646,32 @@ public class Matrix<R extends Num, C extends Num> {
     return m_storage.toString();
   }
 
-  /** 
+  /**
    * Checks if an object is equal to this {@link Matrix}.
-   * 
+   *
    * <p>a<sub>ij</sub> == b<sub>ij</sub>
-   * 
-   * @param o The Object to check against this {@link Matrix}.
+   *
+   * @param other The Object to check against this {@link Matrix}.
    * @return true if the object supplied is a {@link Matrix} and is equal to this matrix.
    */
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+  public boolean equals(Object other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
 
-    Matrix<?, ?> matrix = (Matrix<?, ?>) o;
-    if (MatrixFeatures_DDRM.hasUncountable(matrix.m_storage.getDDRM())) return false;
+    Matrix<?, ?> matrix = (Matrix<?, ?>) other;
+    if (MatrixFeatures_DDRM.hasUncountable(matrix.m_storage.getDDRM())) {
+      return false;
+    }
     return MatrixFeatures_DDRM.isEquals(this.m_storage.getDDRM(), matrix.m_storage.getDDRM());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(m_storage);
   }
 }
