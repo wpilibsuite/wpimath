@@ -71,12 +71,12 @@ public class Matrix<R extends Num, C extends Num> {
 
   /**
    * Gets the underlying {@link SimpleMatrix} that this {@link Matrix} wraps.
-   * 
+   *
    * <p>NOTE:The use of this method is heavily discouraged as this removes any
    * guarantee of type safety. This should only be called if the {@link SimpleMatrix}
    * API is absolutely necessary due to the desired function not being accessible through
    * the {@link Matrix} wrapper.
-   * 
+   *
    * @return The underlying {@link SimpleMatrix} storage.
    */
   public SimpleMatrix getStorage() {

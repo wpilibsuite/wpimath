@@ -42,7 +42,7 @@ public class MatrixTest {
             5.2, 2.1, 2.0, 1.0);
 
     Matrix<N2, N4> result2 = mat3.times(mat4);
-    
+
     assertTrue(Matrix.mat(Nat.N2(), Nat.N4())
         .fill(12.5, 5.55, 7.8, 14.3,
             22.13, 9.82, 13.28, 23.53).isEqual(
